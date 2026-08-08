@@ -6,22 +6,35 @@ Curated index of everyharness plugins. Runtime discovery uses PyPI entry points;
 
 ## Built-in (core package)
 
-| PyPI | Kind | Summary |
-|------|------|---------|
-| `everyharness` | harness | `generic` — fallback harness for unknown models |
-| `everyharness` | loader | `local` — local file paths |
-| `everyharness` | detector | `builtin` — basic kind sniffing |
-| `everyharness` | templates | `cli-stub` — minimal CLI scaffold |
+| Name | Kind | Summary |
+| ------ | ------ | --------- |
+| `generic` | harness | Fallback for unknown models and Python callables |
+| `tabular` | harness | sklearn/joblib predict, evaluate, explain |
+| `embeddings` | harness | embed, similarity, local index search |
+| `llm` | harness | REPL + OpenAI-compatible `/v1` (Ollama, GGUF, HF) |
+| `vision` | harness | classify / detect (ONNX + HF) |
+| `speech` | harness | whisper transcribe (optional install) |
+| `diffusion` | harness | text-to-image generate |
+| `computer` | harness | plan/dry-run computer-use actions |
+| `local` | loader | local filesystem paths |
+| `huggingface` | loader | `hf:org/model` with offline cache |
+| `ollama` | loader | `ollama:model` via local daemon |
+| `callable` | loader | `callable:module:attr` / `python:…` |
+| `cli-stub` | templates | minimal CLI scaffold |
+
+All of the above ship in PyPI package `everyharness`.
 
 ## Community (examples)
 
 | PyPI | Kind | Summary | Maintainer |
 |------|------|---------|------------|
+| `everyharness-sample` | harness | Docs-only example plugin | everyharness |
 | _(your package)_ | harness | Add yours via PR | — |
 
 ## Search locally
 
 ```bash
+everyharness plugin search tabular
 everyharness plugin search llm
 everyharness plugin list
 ```

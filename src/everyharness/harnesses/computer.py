@@ -31,22 +31,25 @@ class ComputerHarness:
         allow_control = "--allow-control" in argv
         filtered = [a for a in argv if a != "--allow-control"]
         if not filtered:
-            print("Usage: plan <json-action> [--allow-control]")
+            print("Usage: plan|dry-run <json-action> [--allow-control]")
             print("Default mode is dry-run (no OS control).")
             return 1
         cmd = filtered[0]
-        if cmd == "plan":
+        if cmd in {"plan", "dry-run"}:
             action_raw = filtered[1] if len(filtered) > 1 else "{}"
             try:
                 action = json.loads(action_raw)
             except json.JSONDecodeError:
                 action = {"type": "raw", "text": action_raw}
+            # dry-run alias always logs without executing, even with --allow-control
+            force_dry = cmd == "dry-run"
+            effective_allow = allow_control and not force_dry
             session_log = {
                 "model": model.uri,
-                "dry_run": not allow_control,
+                "dry_run": not effective_allow,
                 "action": action,
             }
-            if not allow_control:
+            if not effective_allow:
                 session_log["result"] = "dry-run: action logged, not executed"
                 print_json(session_log)
                 return 0

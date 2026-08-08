@@ -26,6 +26,20 @@ def pick_loader(uri: str, loaders: list[LoaderPlugin]) -> LoaderPlugin | None:
     return best if best_score > 0 else None
 
 
+def _looks_like_local_path(uri: str) -> bool:
+    """True when uri is a filesystem path rather than a scheme-based ref."""
+    if "://" in uri:
+        return False
+    if uri.startswith((".", "/", "~")):
+        return True
+    if ":" in uri:
+        scheme = uri.split(":", 1)[0]
+        # macOS/Linux only in v1 — treat alpha schemes as non-paths (hf:, embeddings:, …)
+        if scheme.isalpha() and len(scheme) > 1:
+            return False
+    return bool(Path(uri).suffix)
+
+
 def load_model_ref(
     uri: str,
     loaders: list[LoaderPlugin],
@@ -35,7 +49,16 @@ def load_model_ref(
 ) -> ModelRef:
     """Resolve a URI through loaders; fall back to a bare ModelRef."""
     loader = pick_loader(uri, loaders)
-    ref = loader.load(uri) if loader is not None else ModelRef(id="", uri=uri)
+    if loader is None:
+        path = Path(uri).expanduser()
+        if _looks_like_local_path(uri) and not path.exists():
+            raise RegistryError(f"Local path not found: {uri}")
+        ref = ModelRef(id="", uri=uri)
+    else:
+        try:
+            ref = loader.load(uri)
+        except FileNotFoundError as exc:
+            raise RegistryError(str(exc)) from exc
     merged_meta = dict(ref.metadata)
     if metadata:
         merged_meta.update(metadata)

@@ -34,3 +34,13 @@ def test_computer_dry_run_default():
     model = ModelRef(id="c1", uri="computer:agent", kind="computer")
     code = harness.run_cli(model, ["plan", '{"type":"click","x":1,"y":2}'])
     assert code == 0
+
+
+def test_computer_dry_run_alias(capsys):
+    harness = ComputerHarness()
+    model = ModelRef(id="c1", uri="computer:agent", kind="computer")
+    code = harness.run_cli(model, ["dry-run", '{"type":"echo","message":"hi"}'])
+    assert code == 0
+    out = capsys.readouterr().out
+    assert "dry-run" in out
+    assert "not executed" in out

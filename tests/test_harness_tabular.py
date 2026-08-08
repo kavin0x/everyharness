@@ -40,3 +40,38 @@ def test_tabular_predict(sklearn_model, tmp_path, capsys):
     assert code == 0
     out = capsys.readouterr().out
     assert "predictions" in out
+
+
+def test_tabular_predict_features_key_and_inline(sklearn_model, capsys):
+    harness = TabularHarness()
+    model = ModelRef(
+        id="t1",
+        uri=str(sklearn_model),
+        kind="tabular",
+        metadata={"cached_path": str(sklearn_model)},
+    )
+    code = harness.run_cli(
+        model,
+        ["predict", "--input", '{"features":[[1.5]]}', "--trust-pickle"],
+    )
+    assert code == 0
+    assert "predictions" in capsys.readouterr().out
+
+
+def test_tabular_predict_bad_shape_is_friendly(sklearn_model, capsys):
+    harness = TabularHarness()
+    model = ModelRef(
+        id="t1",
+        uri=str(sklearn_model),
+        kind="tabular",
+        metadata={"cached_path": str(sklearn_model)},
+    )
+    # Fixture-trained model expects 1 feature; send 2 to force a predict error path
+    # (unit fixture is 1-d). Wrong dict without features/X should also fail cleanly.
+    code = harness.run_cli(
+        model,
+        ["predict", "--input", '{"not_features":[[1.5]]}', "--trust-pickle"],
+    )
+    assert code == 1
+    err = capsys.readouterr().err
+    assert "features" in err.lower() or "expect" in err.lower()

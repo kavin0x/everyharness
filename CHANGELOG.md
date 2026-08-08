@@ -2,11 +2,27 @@
 
 All notable changes follow [Keep a Changelog](https://keepachangelog.com/) and [SemVer](https://semver.org/).
 
+## [0.1.1] - 2026-08-08
+
+### Fixed
+
+- `everyharness add` no longer silently registers missing local paths as bare refs
+- `everyharness run` forwards harness flags like `--input` without requiring `--`
+- `--input` accepts inline JSON (`{…}` / `[…]`) as well as file paths
+- Tabular `predict` accepts `{"features":…}` / `{"X":…}` to match serve API and docs
+- Tabular predict/evaluate/serve return friendly errors instead of raw tracebacks / HTTP 500
+- Offline mode blocks update network calls before hitting PyPI/GitHub
+- Computer harness accepts `dry-run` as an alias for `plan`
+
+### Changed
+
+- Plugin catalog now indexes built-in harnesses/loaders/templates so `plugin search tabular` works
+
 ## [0.1.0] - 2026-08-07
 
 ### Added
 
-- PyPI package `everyharness` with `everyharness` / `everyharness` CLI entry points
+- PyPI package `everyharness` with `everyharness` CLI entry points
 - Plugin SDK (`everyharness.plugin`) with harness, loader, detector, and template protocols
 - Plugin host with entry-point discovery and broken-plugin isolation
 - `everyharness plugin` commands: list, search, info, install, init, doctor
@@ -20,4 +36,5 @@ All notable changes follow [Keep a Changelog](https://keepachangelog.com/) and [
 - Example third-party plugin in `examples/sample-plugin/`
 - CI (ruff, mypy, pytest) and PyPI release workflow on version tags
 
+[0.1.1]: https://github.com/kavin0x/everyharness/releases/tag/v0.1.1
 [0.1.0]: https://github.com/kavin0x/everyharness/releases/tag/v0.1.0

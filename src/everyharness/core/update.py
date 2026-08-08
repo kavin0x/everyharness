@@ -59,6 +59,8 @@ def fetch_latest_github_version(timeout: float = 10.0) -> str | None:
 
 def fetch_latest_version(timeout: float = 10.0) -> str | None:
     """Resolve latest published version (PyPI, then GitHub Releases)."""
+    if is_offline():
+        raise OfflineError("Update checks are disabled in offline mode (EVERYHARNESS_OFFLINE=1).")
     latest = fetch_latest_pypi_version(timeout=timeout)
     if latest is not None:
         return latest

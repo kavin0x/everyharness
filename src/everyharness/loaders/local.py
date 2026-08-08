@@ -23,15 +23,19 @@ class LocalLoader:
         return 0.0
 
     def load(self, uri: str) -> ModelRef:
-        path = Path(uri).resolve()
+        path = Path(uri).expanduser().resolve()
+        if not path.exists():
+            raise FileNotFoundError(f"Local path not found: {uri}")
         cache_path = cache_dir_for("local", str(path))
         metadata: dict[str, object] = {"source": "local", "path": str(path)}
         if path.is_file():
             cached = snapshot_local_copy(path, cache_path)
             metadata["cached_path"] = str(cached)
-        else:
+        elif path.is_dir():
             metadata["cached_path"] = str(cache_path)
             write_metadata(cache_path, {"path": str(path), "kind": "directory"})
+        else:
+            raise FileNotFoundError(f"Local path is not a file or directory: {uri}")
         kind = kind_from_uri(str(path))
         return ModelRef(
             id=str(uuid.uuid4())[:8],

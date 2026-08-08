@@ -23,11 +23,22 @@ def test_run_generic_info(runner, tmp_path, monkeypatch):
     assert rec.id in result.stdout or "callable" in result.stdout
 
 
-def test_add_detects_kind(runner, tmp_path, monkeypatch):
+def test_add_rejects_missing_file(runner, tmp_path, monkeypatch):
     reg_path = tmp_path / "registry.json"
     monkeypatch.setattr("everyharness.core.registry.registry_path", lambda: reg_path)
-    model = tmp_path / "model.pkl"
-    model.write_bytes(b"")
-    result = runner.invoke(app, ["add", str(model), "--trust-pickle"])
+    result = runner.invoke(app, ["add", str(tmp_path / "missing.pkl"), "--trust-pickle"])
+    assert result.exit_code == 1
+    assert "not found" in result.stdout.lower() or "not found" in (result.stderr or "").lower()
+
+
+def test_run_embeddings_inline_json(runner, tmp_path, monkeypatch):
+    reg_path = tmp_path / "registry.json"
+    monkeypatch.setattr("everyharness.core.registry.registry_path", lambda: reg_path)
+    reg = ModelRegistry(reg_path)
+    rec = reg.add("embeddings:demo", kind="embeddings")
+    result = runner.invoke(
+        app,
+        ["run", rec.id, "similarity", "--input", '{"a":"cat","b":"kitten"}'],
+    )
     assert result.exit_code == 0
-    assert "tabular" in result.stdout
+    assert "similarity" in result.stdout

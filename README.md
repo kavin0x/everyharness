@@ -45,9 +45,9 @@ everyharness add python:callable_demo:echo
 everyharness list
 
 # same interface, different harnesses
-everyharness run --trust-pickle <id> -- predict --input features.json
-everyharness run <id> -- similarity --input '{"a":"cat","b":"kitten"}'
-everyharness run <id> -- call --input '{"hello":"world"}'
+everyharness run --trust-pickle <id> predict --input '[[1.5, 0.5]]'
+everyharness run <id> similarity --input '{"a":"cat","b":"kitten"}'
+everyharness run <id> call --input '{"hello":"world"}'
 
 # scaffold a publishable harness plugin
 everyharness plugin init weather --kind harness

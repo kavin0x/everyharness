@@ -74,6 +74,11 @@ def test_fetch_latest_pypi_version_handles_http_error():
         assert fetch_latest_pypi_version() is None
 
 
+def test_fetch_latest_version_offline_raises():
+    with patch.dict(os.environ, {"EVERYHARNESS_OFFLINE": "1"}), pytest.raises(OfflineError):
+        fetch_latest_version()
+
+
 def test_upgrade_command_semver():
     assert upgrade_command("0.2.0") == "pip install 'everyharness==0.2.0'"
 

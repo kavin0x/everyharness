@@ -13,7 +13,11 @@ def print_json(data: Any) -> None:
 
 
 def read_json_input(path: str | None) -> Any:
+    """Read JSON from a file path, inline JSON string, or stdin."""
     if path:
+        stripped = path.strip()
+        if stripped.startswith(("{", "[")):
+            return json.loads(stripped)
         return json.loads(Path(path).read_text(encoding="utf-8"))
     if sys.stdin.isatty():
         return None

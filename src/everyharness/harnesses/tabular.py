@@ -29,6 +29,19 @@ def _load_sklearn_model(model: ModelRef, *, trust_pickle: bool = False) -> Any:
     return joblib.load(path)
 
 
+def _extract_features(data: Any) -> Any | None:
+    """Normalize predict payloads to a feature matrix."""
+    if isinstance(data, dict):
+        if "features" in data:
+            return data["features"]
+        if "X" in data:
+            return data["X"]
+        return None
+    if isinstance(data, list):
+        return data
+    return [data]
+
+
 class TabularHarness:
     name = "tabular"
     api_version = PLUGIN_API_VERSION
@@ -65,8 +78,18 @@ class TabularHarness:
             if data is None:
                 print("Provide JSON features via --input or stdin", file=sys.stderr)
                 return 1
-            features = data if isinstance(data, list) else [data]
-            preds = estimator.predict(features)
+            features = _extract_features(data)
+            if features is None:
+                print(
+                    'Predict expects a feature matrix, {"features": [...]}, or {"X": [...]}',
+                    file=sys.stderr,
+                )
+                return 1
+            try:
+                preds = estimator.predict(features)
+            except Exception as exc:
+                print(f"Predict error: {exc}", file=sys.stderr)
+                return 1
             print_json({"predictions": preds.tolist() if hasattr(preds, "tolist") else list(preds)})
             return 0
         if cmd == "evaluate":
@@ -74,12 +97,16 @@ class TabularHarness:
             if not isinstance(data, dict) or "X" not in data or "y" not in data:
                 print('Evaluate expects JSON {"X": [...], "y": [...]}', file=sys.stderr)
                 return 1
-            preds = estimator.predict(data["X"])
-            y_true = data["y"]
-            if hasattr(estimator, "score"):
-                score = float(estimator.score(data["X"], y_true))
-            else:
-                score = float((preds == y_true).mean()) if len(y_true) else 0.0
+            try:
+                preds = estimator.predict(data["X"])
+                y_true = data["y"]
+                if hasattr(estimator, "score"):
+                    score = float(estimator.score(data["X"], y_true))
+                else:
+                    score = float((preds == y_true).mean()) if len(y_true) else 0.0
+            except Exception as exc:
+                print(f"Evaluate error: {exc}", file=sys.stderr)
+                return 1
             print_json({"score": score, "predictions": list(preds)})
             return 0
         if cmd == "explain":
@@ -99,7 +126,7 @@ class TabularHarness:
     def serve(self, model: ModelRef, host: str, port: int) -> None:
         try:
             import uvicorn
-            from fastapi import FastAPI
+            from fastapi import FastAPI, HTTPException
         except ImportError:
             missing_extra("tabular serve", "tabular")
             return
@@ -108,8 +135,16 @@ class TabularHarness:
 
         @app.post("/predict")
         def predict(payload: dict[str, Any]) -> dict[str, Any]:
-            features = payload.get("features") or payload.get("X")
-            preds = estimator.predict(features)
+            features = payload.get("features") if "features" in payload else payload.get("X")
+            if features is None:
+                raise HTTPException(
+                    status_code=400,
+                    detail='Body must include "features" or "X"',
+                )
+            try:
+                preds = estimator.predict(features)
+            except Exception as exc:
+                raise HTTPException(status_code=400, detail=str(exc)) from exc
             return {"predictions": preds.tolist() if hasattr(preds, "tolist") else list(preds)}
 
         uvicorn.run(app, host=host, port=port, log_level="warning")

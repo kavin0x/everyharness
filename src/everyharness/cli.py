@@ -175,28 +175,36 @@ def rm_cmd(
     console.print(f"Removed [cyan]{model_id}[/cyan]")
 
 
-@app.command("run")
+@app.command(
+    "run",
+    context_settings={"allow_extra_args": True, "ignore_unknown_options": True},
+)
 def run_cmd(
+    ctx: typer.Context,
     model_id: Annotated[str, typer.Argument(help="Registered model id")],
-    args: Annotated[
-        list[str] | None,
-        typer.Argument(help="Arguments passed to the harness CLI."),
-    ] = None,
     trust_pickle: Annotated[
         bool,
         typer.Option("--trust-pickle", help="Allow pickle/joblib model execution."),
     ] = False,
 ) -> None:
-    """Run a model through its matching harness."""
+    """Run a model through its matching harness.
+
+    Pass harness args after the model id (``--input`` etc. are forwarded):
+
+      everyharness run <id> predict --input '[[1.5, 0.5]]'
+    """
     host = _host()
     try:
         model, harness = resolve_for_run(model_id, host)
         require_pickle_trust(model.uri, trust_pickle)
-        argv = list(args or [])
+        argv = list(ctx.args)
         if trust_pickle and "--trust-pickle" not in argv:
             argv.append("--trust-pickle")
         code = harness.run_cli(model, argv)
     except (RegistryError, EveryharnessError) as exc:
+        console.print(f"[red]{exc}[/red]")
+        raise typer.Exit(1) from exc
+    except Exception as exc:
         console.print(f"[red]{exc}[/red]")
         raise typer.Exit(1) from exc
     raise typer.Exit(code)
@@ -378,7 +386,7 @@ def template_list() -> None:
         try:
             for ref in pack.list_templates():
                 table.add_row(ref.pack, ref.name, ref.description)
-        except Exception as exc:
+        except (EveryharnessError, OSError, ValueError) as exc:
             console.print(f"[yellow]warning[/yellow]: {pack.name}: {exc}")
     console.print(table)
 
