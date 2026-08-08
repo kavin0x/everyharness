@@ -1,0 +1,17 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "everyharness-sample"
+version = "0.1.0"
+description = "Sample everyharness plugin for documentation"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = ["everyharness>=0.1.0"]
+
+[project.entry-points."everyharness.harnesses"]
+sample = "everyharness_sample:SampleHarness"
+
+[tool.hatch.build.targets.wheel]
+packages = ["everyharness_sample"]

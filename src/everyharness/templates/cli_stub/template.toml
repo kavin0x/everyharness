@@ -1,0 +1,6 @@
+name = "cli-stub"
+default_template = "main"
+
+[templates.main]
+"README.md" = "README.md.j2"
+"run.sh" = "run.sh.j2"

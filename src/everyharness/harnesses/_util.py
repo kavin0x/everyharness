@@ -1,0 +1,36 @@
+"""Shared harness utilities."""
+
+from __future__ import annotations
+
+import json
+import sys
+from pathlib import Path
+from typing import Any
+
+
+def print_json(data: Any) -> None:
+    print(json.dumps(data, indent=2, default=str))
+
+
+def read_json_input(path: str | None) -> Any:
+    if path:
+        return json.loads(Path(path).read_text(encoding="utf-8"))
+    if sys.stdin.isatty():
+        return None
+    return json.loads(sys.stdin.read())
+
+
+def missing_extra(name: str, extra: str) -> int:
+    print(
+        f"Missing optional dependency for {name}. "
+        f"Install with: pip install 'everyharness[{extra}]'",
+        file=sys.stderr,
+    )
+    return 1
+
+
+def try_import(module: str, extra: str) -> Any | None:
+    try:
+        return __import__(module)
+    except ImportError:
+        return None
