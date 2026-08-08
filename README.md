@@ -114,12 +114,6 @@ uv run pytest -q
 uv run ruff check src tests
 ```
 
-Regenerate the README demo:
-
-```bash
-cd docs/demo && vhs demo.tape
-```
-
 ## License
 
 Apache-2.0 — see [LICENSE](LICENSE).
