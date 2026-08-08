@@ -20,7 +20,7 @@ Offline-first CLI + TUI that detects model type, runs the right harness, serves 
 - **One CLI** — `everyharness add` → `everyharness run` → `everyharness serve` → `everyharness train`
 - **Offline-first** — works without the network; `EVERYHARNESS_OFFLINE=1` hard-blocks outbound calls
 - **Plugin system** — publish `everyharness-*` packages; scaffold with `everyharness plugin init`
-- **Agent UI bridge** — `everyharness ui` writes a prompt pack for Cursor, Claude Code, Copilot, Pi, or Codex
+- **Agent UI bridge** — `everyharness ui` writes a prompt pack for Cursor, Claude Code, Github Copilot, Pi, or Codex
 - **Textual TUI** — launch with bare `everyharness`
 
 ## Install
