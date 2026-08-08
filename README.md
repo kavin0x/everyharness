@@ -2,7 +2,7 @@
 
 **Drop in any model. Get a harness.**
 
-Offline-first CLI + TUI that detects model type, runs the right harness, serves HTTP, and scaffolds plugins — for tabular, embeddings, LLMs, vision, diffusion, and more.
+Offline-first CLI + TUI that detects model type, runs the right harness, serves HTTP, and scaffolds plugins — for tabular, embeddings, LLMs, vision, diffusion, computer use, and more.
 
 [![CI](https://github.com/kavin0x/everyharness/actions/workflows/ci.yml/badge.svg)](https://github.com/kavin0x/everyharness/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/everyharness.svg)](https://pypi.org/project/everyharness/)
@@ -62,7 +62,7 @@ everyharness
 ## Model types
 
 | Kind | Examples | Typical commands |
-|------|----------|------------------|
+| ------ | ---------- | ------------------ |
 | `tabular` | `.pkl` / `.joblib` sklearn | `predict`, `evaluate`, `explain` |
 | `embeddings` | sentence-transformers, `embeddings:` | `embed`, `similarity` |
 | `llm` | GGUF, Ollama, HF | `complete`, `repl`, `serve` |
