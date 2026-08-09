@@ -8,7 +8,7 @@ Alpha offline-first CLI + TUI for wrapping local models (sklearn, embeddings, Ol
 [![PyPI](https://img.shields.io/pypi/v/everyharness.svg)](https://pypi.org/project/everyharness/)
 [![Python](https://img.shields.io/pypi/pyversions/everyharness.svg)](https://pypi.org/project/everyharness/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
-[![Socket Badge](https://badge.socket.dev/pypi/package/everyharness/0.1.2?artifact_id=tar-gz)](https://badge.socket.dev/pypi/package/everyharness/0.1.2?artifact_id=tar-gz)
+[![Socket Badge](https://badge.socket.dev/pypi/package/everyharness/0.1.3?artifact_id=tar-gz)](https://badge.socket.dev/pypi/package/everyharness/0.1.3?artifact_id=tar-gz)
 
 ![everyharness demo](docs/demo/demo.gif)
 

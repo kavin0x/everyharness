@@ -69,7 +69,9 @@ def _chat_gguf(model: ModelRef, messages: list[dict[str, str]]) -> str:
     path = model.metadata.get("cached_path") or model.uri
     llm = Llama(model_path=str(path), verbose=False)
     prompt = "\n".join(f"{m['role']}: {m['content']}" for m in messages)
-    out = llm(prompt, max_tokens=256)
+    out = llm(prompt, max_tokens=256, stream=False)
+    if not isinstance(out, dict):
+        raise TypeError("unexpected streaming response from llama-cpp")
     return str(out["choices"][0]["text"])
 
 

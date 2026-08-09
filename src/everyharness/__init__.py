@@ -2,5 +2,5 @@
 
 from everyharness.plugin import PLUGIN_API_VERSION
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __all__ = ["__version__", "PLUGIN_API_VERSION"]
