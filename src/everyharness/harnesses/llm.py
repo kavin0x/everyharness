@@ -220,6 +220,9 @@ class LLMHarness:
             version="0.1.0",
             api_version=self.api_version,
             kind="harness",
-            summary="LLM REPL and OpenAI-compatible /v1 server (Ollama, GGUF, HF).",
+            summary=(
+                "Thin LLM wrapper: Ollama HTTP, optional GGUF (llama-cpp-python), "
+                "HF text-generation; OpenAI-compatible /v1 serve."
+            ),
             requires_api=">=1,<2",
         )

@@ -33,6 +33,12 @@ def missing_extra(name: str, extra: str) -> int:
     return 1
 
 
+def unsupported(message: str) -> int:
+    """Print a clear unsupported-feature message and return exit code 1."""
+    print(f"Unsupported: {message}", file=sys.stderr)
+    return 1
+
+
 def try_import(module: str, extra: str) -> Any | None:
     try:
         return __import__(module)

@@ -33,6 +33,10 @@ def test_materialize_ui_pack_writes_expected_files(tmp_path: Path):
     prompt = (dest / "AGENT_PROMPT.md").read_text(encoding="utf-8")
     assert model.id in prompt
     assert model.uri in prompt
+    assert "only wrote these prompt/metadata files" in prompt
+
+    readme = (dest / "README.md").read_text(encoding="utf-8")
+    assert "prompt pack" in readme.lower()
 
 
 def test_ui_dest_for_model_default_name():

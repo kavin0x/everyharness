@@ -1,4 +1,4 @@
-"""Computer-use harness (dry-run by default)."""
+"""Experimental computer-action harness (dry-run / echo only in v1)."""
 
 from __future__ import annotations
 
@@ -32,7 +32,8 @@ class ComputerHarness:
         filtered = [a for a in argv if a != "--allow-control"]
         if not filtered:
             print("Usage: plan|dry-run <json-action> [--allow-control]")
-            print("Default mode is dry-run (no OS control).")
+            print("Default mode is dry-run (logs JSON; does not control the OS).")
+            print("With --allow-control, only {\"type\":\"echo\",\"message\":\"...\"} is executed.")
             return 1
         cmd = filtered[0]
         if cmd in {"plan", "dry-run"}:
@@ -55,7 +56,8 @@ class ComputerHarness:
                 return 0
             if not _permissions_ok():
                 print(
-                    "Control blocked: enable Accessibility/Screen Recording permissions",
+                    "Control blocked: set EVERYHARNESS_ALLOW_COMPUTER=1 "
+                    "(and grant OS permissions if required).",
                     file=sys.stderr,
                 )
                 return 1
@@ -66,7 +68,9 @@ class ComputerHarness:
         return 1
 
     def serve(self, model: ModelRef, host: str, port: int) -> None:
-        raise NotImplementedError("Computer harness serve is not supported")
+        raise NotImplementedError(
+            "Computer harness has no HTTP serve in v1. Use: everyharness run <id> plan '<json>'"
+        )
 
     def finetune(self, model: ModelRef, dataset: Path, opts: TrainOpts) -> ModelRef:
         raise NotImplementedError("Computer harness does not support fine-tuning")
@@ -80,7 +84,10 @@ class ComputerHarness:
             version="0.1.0",
             api_version=self.api_version,
             kind="harness",
-            summary="Computer-use harness with dry-run default and --allow-control opt-in.",
+            summary=(
+                "Experimental action planner: dry-run logs JSON; "
+                "--allow-control only supports echo (no real OS control)."
+            ),
             requires_api=">=1,<2",
         )
 
@@ -99,4 +106,7 @@ def _execute_action(action: dict[str, object]) -> str:
     action_type = action.get("type")
     if action_type == "echo":
         return str(action.get("message", ""))
-    return f"unsupported action type: {action_type}"
+    return (
+        f"unsupported action type: {action_type} "
+        '(v1 only supports {"type":"echo","message":"..."})'
+    )

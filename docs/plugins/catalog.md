@@ -1,6 +1,6 @@
 # Plugin catalog
 
-Curated index of everyharness plugins. Runtime discovery uses PyPI entry points; this catalog is for **marketing and onboarding**.
+Curated index of everyharness plugins. Runtime discovery uses PyPI entry points; this catalog is for **discovery and onboarding**.
 
 > Installing a plugin executes third-party code. Review packages before `everyharness plugin install`.
 
@@ -8,14 +8,14 @@ Curated index of everyharness plugins. Runtime discovery uses PyPI entry points;
 
 | Name | Kind | Summary |
 | ------ | ------ | --------- |
-| `generic` | harness | Fallback for unknown models and Python callables |
-| `tabular` | harness | sklearn/joblib predict, evaluate, explain |
+| `generic` | harness | Python callables (`call`/`info`); not a general runner |
+| `tabular` | harness | sklearn/joblib predict, evaluate, explain, serve |
 | `embeddings` | harness | embed, similarity, local index search |
-| `llm` | harness | REPL + OpenAI-compatible `/v1` (Ollama, GGUF, HF) |
-| `vision` | harness | classify / detect (ONNX + HF) |
-| `speech` | harness | whisper transcribe (optional install) |
-| `diffusion` | harness | text-to-image generate |
-| `computer` | harness | plan/dry-run computer-use actions |
+| `llm` | harness | Thin Ollama/GGUF/HF wrapper + OpenAI-compatible `/v1` |
+| `vision` | harness | Image classification (ONNX + HF); no object detect |
+| `speech` | harness | Whisper transcribe only (manual whisper install) |
+| `diffusion` | harness | text-to-image generate (CLI only) |
+| `computer` | harness | Experimental dry-run planner; echo-only control |
 | `local` | loader | local filesystem paths |
 | `huggingface` | loader | `hf:org/model` with offline cache |
 | `ollama` | loader | `ollama:model` via local daemon |
@@ -24,7 +24,9 @@ Curated index of everyharness plugins. Runtime discovery uses PyPI entry points;
 
 All of the above ship in PyPI package `everyharness`.
 
-## Community (examples)
+## Community
+
+No third-party plugins are curated yet. The sample below is docs-only.
 
 | PyPI | Kind | Summary | Maintainer |
 |------|------|---------|------------|

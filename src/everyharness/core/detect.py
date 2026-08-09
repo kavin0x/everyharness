@@ -8,6 +8,7 @@ from everyharness.plugin.protocols import DetectorPlugin, ModelRef, PluginInfo
 
 PLUGIN_API_VERSION = "1.0.0"
 
+# Only model artifact extensions — never input media (.png/.wav/etc.).
 _EXTENSION_KINDS: dict[str, str] = {
     ".pkl": "tabular",
     ".pickle": "tabular",
@@ -15,16 +16,10 @@ _EXTENSION_KINDS: dict[str, str] = {
     ".onnx": "vision",
     ".gguf": "llm",
     ".safetensors": "llm",
+    # Torch checkpoints are ambiguous; prefer explicit --type when unsure.
     ".pt": "vision",
     ".pth": "vision",
     ".bin": "llm",
-    ".wav": "speech",
-    ".mp3": "speech",
-    ".flac": "speech",
-    ".png": "vision",
-    ".jpg": "vision",
-    ".jpeg": "vision",
-    ".webp": "vision",
 }
 
 _URI_PREFIX_KINDS: list[tuple[str, str]] = [

@@ -1,15 +1,16 @@
 # Architecture
 
-everyharness is a **platform** for running local models through pluggable harnesses—not a closed toolbox.
+everyharness is a **plugin platform** for running local models through harnesses—not a full ML serving stack (use Ollama / Gradio / BentoML when you need those jobs done deeply).
 
 ## Flow
 
 1. User installs `pip install everyharness` and runs `everyharness add <ref>`.
 2. **Plugin host** loads built-in entry points plus installed `everyharness-*` packages.
-3. **Detectors** score model kind; user can override with `--type`.
-4. Matching **harness** runs CLI, serve, or train paths.
+3. **Detectors** score model kind from URI/extensions/metadata; user can override with `--type`.
+   Image/audio *inputs* are not treated as model artifacts.
+4. Matching **harness** runs CLI, serve, or train paths (capability varies by harness).
 5. Optional **templates** scaffold extra CLI or project files.
-6. Optional `everyharness ui --agent …` writes coding-agent prompt packs under `./harness-ui/<id>/`.
+6. Optional `everyharness ui --agent …` writes a **prompt pack** (not a finished UI) under `./harness-ui/<id>/`.
 
 ## Components
 
@@ -19,8 +20,8 @@ everyharness is a **platform** for running local models through pluggable harnes
 | TUI | Textual fullscreen UI |
 | Core | Registry, config, cache, autoupdate |
 | Plugin host | Entry-point discovery, API compat, isolation |
-| Built-ins | Generic harness, local loader, builtin detector, cli-stub templates |
-| Community | PyPI packages via `everyharness.harnesses` / `loaders` / `detectors` / `templates` |
+| Built-ins | Harnesses, loaders, builtin detector, cli-stub templates |
+| Community | Optional PyPI packages via entry points (none curated yet) |
 
 ## Entry points
 

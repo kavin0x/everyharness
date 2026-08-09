@@ -49,8 +49,13 @@ class GenericHarness:
                 result = _invoke_callable(model, data)
                 print_json({"result": result})
                 return 0
-            print_json({"message": "generic predict stub", "input": data})
-            return 0
+            print(
+                "generic predict requires a Python callable model "
+                "(add via python:module:attr or callable:module:attr). "
+                "For sklearn pickles use --type tabular.",
+                file=sys.stderr,
+            )
+            return 1
         if cmd == "call":
             data = read_json_input(input_path) or {}
             result = _invoke_callable(model, data)
@@ -60,7 +65,10 @@ class GenericHarness:
         return 1
 
     def serve(self, model: ModelRef, host: str, port: int) -> None:
-        raise NotImplementedError("Use a specialized harness serve() for HTTP endpoints")
+        raise NotImplementedError(
+            "Generic harness has no HTTP serve. Use tabular/llm/embeddings/vision serve, "
+            "or everyharness run <id> call --input '...'"
+        )
 
     def finetune(self, model: ModelRef, dataset: Path, opts: TrainOpts) -> ModelRef:
         raise NotImplementedError("Generic harness does not support fine-tuning")
@@ -74,7 +82,7 @@ class GenericHarness:
             version="0.1.0",
             api_version=self.api_version,
             kind="harness",
-            summary="Fallback harness for unknown model types and Python callables.",
+            summary="Fallback for Python callables (call/info); not a general model runner.",
             requires_api=">=1,<2",
         )
 

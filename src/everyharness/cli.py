@@ -429,7 +429,7 @@ def ui_cmd(
         typer.Option("--out", "-o", help="Output directory (default: ./harness-ui/<id>)"),
     ] = None,
 ) -> None:
-    """Generate a coding-agent prompt pack to scaffold a web/GUI wrapper."""
+    """Generate a coding-agent prompt pack (does not build a UI)."""
     if agent not in AGENT_IDS:
         console.print(f"[red]Unknown agent: {agent}[/red]")
         console.print(f"Choose from: {', '.join(AGENT_IDS)}")

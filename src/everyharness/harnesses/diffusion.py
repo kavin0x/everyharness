@@ -63,7 +63,10 @@ class DiffusionHarness:
         return 0
 
     def serve(self, model: ModelRef, host: str, port: int) -> None:
-        raise NotImplementedError("Diffusion HTTP serve ships in a later release")
+        raise NotImplementedError(
+            "Diffusion HTTP serve is not implemented in v1. "
+            "Use: everyharness run <id> generate '<prompt>'"
+        )
 
     def finetune(self, model: ModelRef, dataset: Path, opts: TrainOpts) -> ModelRef:
         return finetune_model(model, dataset, opts, harness=self.name)
@@ -77,6 +80,6 @@ class DiffusionHarness:
             version="0.1.0",
             api_version=self.api_version,
             kind="harness",
-            summary="Text-to-image diffusion generate (diffusers extra).",
+            summary="Text-to-image generate via Diffusers (CLI only; no HTTP serve in v1).",
             requires_api=">=1,<2",
         )

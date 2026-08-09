@@ -1,4 +1,4 @@
-"""Vision harness (classify / detect)."""
+"""Vision harness (image classification)."""
 
 from __future__ import annotations
 
@@ -58,8 +58,12 @@ class VisionHarness:
         if model.kind == "vision":
             return 0.95
         uri = model.uri.lower()
-        if uri.endswith((".onnx", ".pt", ".pth", ".png", ".jpg", ".jpeg", ".webp")):
+        # Model weights only — never treat input images as vision models.
+        if uri.endswith((".onnx", ".pt", ".pth")):
             return 0.7
+        repo = str(model.metadata.get("repo_id", "")).lower()
+        if any(token in repo for token in ("vit", "resnet", "clip", "vision")):
+            return 0.75
         return 0.0
 
     def run_cli(self, model: ModelRef, argv: list[str]) -> int:
@@ -86,6 +90,12 @@ class VisionHarness:
             files = sorted(p for p in directory.iterdir() if p.suffix.lower() in exts)
             print_json({"images": [str(p) for p in files]})
             return 0
+        if cmd == "detect":
+            print(
+                "Object detection is not implemented in v1. Use: classify <image>",
+                file=sys.stderr,
+            )
+            return 1
         print(f"Unknown vision command: {cmd}", file=sys.stderr)
         return 1
 
@@ -118,6 +128,6 @@ class VisionHarness:
             version="0.1.0",
             api_version=self.api_version,
             kind="harness",
-            summary="Vision classify/detect harness (ONNX + HF pipelines).",
+            summary="Image classification via ONNX Runtime or Hugging Face pipelines.",
             requires_api=">=1,<2",
         )

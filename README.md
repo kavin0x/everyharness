@@ -1,26 +1,43 @@
 # everyharness
 
-**Drop in any model. Get a harness.**
+**Register a local model. Run it through a harness.**
 
-Offline-first CLI + TUI that detects model type, runs the right harness, serves HTTP, and scaffolds plugins — for tabular, embeddings, LLMs, vision, diffusion, computer use, and more.
+Alpha offline-first CLI + TUI for wrapping local models (sklearn, embeddings, Ollama/GGUF/HF LLMs, and more) behind one plugin interface. Not a replacement for Ollama, Gradio, or BentoML — a thin registry + harness layer.
 
 [![CI](https://github.com/kavin0x/everyharness/actions/workflows/ci.yml/badge.svg)](https://github.com/kavin0x/everyharness/actions/workflows/ci.yml)
 [![PyPI](https://img.shields.io/pypi/v/everyharness.svg)](https://pypi.org/project/everyharness/)
 [![Python](https://img.shields.io/pypi/pyversions/everyharness.svg)](https://pypi.org/project/everyharness/)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg)](LICENSE)
+[![Socket Badge](https://badge.socket.dev/pypi/package/everyharness/0.1.2?artifact_id=tar-gz)](https://badge.socket.dev/pypi/package/everyharness/0.1.2?artifact_id=tar-gz)
 
 ![everyharness demo](docs/demo/demo.gif)
 
 > macOS and Linux only in v1. Windows is not supported.
 
+## What works today
+
+| Area | Status |
+| ------ | -------- |
+| Tabular (sklearn/joblib) | **Solid** — `predict`, `evaluate`, `explain`, HTTP serve |
+| Embeddings | **Usable** — embed/similarity; hash fallback without extras |
+| LLM | **Thin wrapper** — Ollama HTTP; optional GGUF (`[llm-gguf]`) / HF (`[llm]`) |
+| Vision | **Classify only** — ONNX/HF; no object detection |
+| Diffusion | **CLI generate only** — no HTTP serve |
+| Speech | **Transcribe only** — install `openai-whisper` yourself; no TTS/serve |
+| Computer | **Experimental** — dry-run JSON log; `--allow-control` only supports `echo` |
+| `everyharness ui` | **Prompt pack** — writes files for a coding agent; does not build a UI |
+| Community plugins | **None yet** — scaffold with `plugin init`; catalog is built-ins + docs sample |
+
+Pickles need `--trust-pickle` (loads arbitrary code). Prefer joblib from trusted sources.
+
 ## Features
 
-- **Drop-in models** — local files, Hugging Face, Ollama, or Python callables
-- **Auto harness selection** — tabular, embeddings, LLM, vision, speech, diffusion, computer, generic
-- **One CLI** — `everyharness add` → `everyharness run` → `everyharness serve` → `everyharness train`
-- **Offline-first** — works without the network; `EVERYHARNESS_OFFLINE=1` hard-blocks outbound calls
+- **Model registry** — local files, Hugging Face, Ollama, or Python callables
+- **Harness selection** — by kind / URI; override with `--type`
+- **One CLI** — `everyharness add` → `run` → `serve` → `train` (train depth varies by harness)
+- **Offline-first** — `EVERYHARNESS_OFFLINE=1` hard-blocks outbound calls
 - **Plugin system** — publish `everyharness-*` packages; scaffold with `everyharness plugin init`
-- **Agent UI bridge** — `everyharness ui` writes a prompt pack for Cursor, Claude Code, Github Copilot, Pi, or Codex
+- **Agent prompt pack** — `everyharness ui` writes prompts for Cursor, Claude Code, Copilot, Pi, or Codex
 - **Textual TUI** — launch with bare `everyharness`
 
 ## Install
@@ -30,7 +47,9 @@ pip install everyharness
 
 # optional extras
 pip install 'everyharness[tabular]'
-pip install 'everyharness[llm]'
+pip install 'everyharness[llm]'          # HF + OpenAI-compatible serve deps
+pip install 'everyharness[llm,llm-gguf]' # + llama-cpp-python for local GGUF
+pip install 'everyharness[vision]'
 pip install 'everyharness[all]'
 ```
 
@@ -61,18 +80,20 @@ everyharness
 
 ## Model types
 
-| Kind | Examples | Typical commands |
-| ------ | ---------- | ------------------ |
-| `tabular` | `.pkl` / `.joblib` sklearn | `predict`, `evaluate`, `explain` |
-| `embeddings` | sentence-transformers, `embeddings:` | `embed`, `similarity` |
-| `llm` | GGUF, Ollama, HF | `complete`, `repl`, `serve` |
-| `vision` | image classifiers | harness-specific |
-| `diffusion` | Diffusers pipelines | harness-specific |
-| `generic` | Python callables | `call`, `predict`, `info` |
+| Kind | Examples | Typical commands | Notes |
+| ------ | ---------- | ------------------ | ------- |
+| `tabular` | `.pkl` / `.joblib` sklearn | `predict`, `evaluate`, `explain`, `serve` | Best-supported path |
+| `embeddings` | sentence-transformers, `embeddings:` | `embed`, `similarity` | |
+| `llm` | Ollama, GGUF, HF | `complete`, `repl`, `serve` | Thin wrapper over backends |
+| `vision` | `.onnx`, HF classifiers | `classify` | No `detect` in v1 |
+| `diffusion` | Diffusers pipelines | `generate` | No HTTP serve |
+| `speech` | Whisper | `transcribe` | Separate whisper install |
+| `computer` | `computer:` refs | `plan` / `dry-run` | Echo-only when control enabled |
+| `generic` | Python callables | `call`, `info` | |
 
-## Coding-agent UI bridge
+## Coding-agent prompt pack
 
-Generate a prompt pack so your coding agent can scaffold a local web/GUI wrapper:
+Write metadata + `AGENT_PROMPT.md` so your coding agent can scaffold a local web/GUI wrapper (everyharness does not generate the UI itself):
 
 ```bash
 everyharness ui <model-id> --agent cursor
@@ -81,7 +102,7 @@ everyharness ui <model-id> --agent cursor
 
 ## Plugins
 
-Community packages publish as `everyharness-*` on PyPI:
+Built-in harnesses/loaders ship in the core package. Third-party packages can publish as `everyharness-*` on PyPI (none curated yet beyond the docs sample):
 
 ```bash
 everyharness plugin search tabular

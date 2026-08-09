@@ -42,7 +42,11 @@ class TemplateRef:
 
 @dataclass(frozen=True)
 class TrainOpts:
-    """Fine-tune options (stub for later phases)."""
+    """Fine-tune options passed to harness adapters.
+
+    Supported today: tabular retrain/partial_fit. LLM LoRA, vision head, embeddings
+    contrastive, and diffusion adapters are experimental and may require extra deps.
+    """
 
     epochs: int = 1
     learning_rate: float = 1e-4
