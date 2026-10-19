@@ -130,6 +130,10 @@ packages = ["src/everyharness"]
 [tool.hatch.build.targets.sdist]
 include = ["src/everyharness", "README.md", "LICENSE"]
 
+[tool.uv]
+# urllib3 is transitive (diffusers -> requests). Floor it for GHSA-vxq7-64xx-v4gw / GHSA-gh4c-6fx4-qh6g.
+constraint-dependencies = ["urllib3>=2.8.0"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["src"]
