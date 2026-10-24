@@ -59,7 +59,7 @@ embeddings = [
     "uvicorn[standard]>=0.30",
 ]
 vision = [
-    "pillow>=10.0",
+    "pillow>=13.0.0",
     "numpy>=1.26",
     "fastapi>=0.115",
     "uvicorn[standard]>=0.30",
@@ -73,7 +73,7 @@ speech-whisper = []
 diffusion = [
     "diffusers>=0.30",
     "torch>=2.0",
-    "pillow>=10.0",
+    "pillow>=13.0.0",
 ]
 computer = []
 train = [
