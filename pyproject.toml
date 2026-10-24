@@ -133,7 +133,8 @@ include = ["src/everyharness", "README.md", "LICENSE"]
 [tool.uv]
 # urllib3 is transitive (diffusers -> requests). Floor it for GHSA-vxq7-64xx-v4gw / GHSA-gh4c-6fx4-qh6g.
 # certifi is transitive (requests/httpx). Floor it for GHSA-6q48-6c7w-9gw2.
-constraint-dependencies = ["urllib3>=2.8.0", "certifi>=2026.10.19"]
+# filelock is transitive (torch/diffusers/huggingface-hub) and setuptools is transitive (torch). Floor them for Dependabot alerts 14-17.
+constraint-dependencies = ["urllib3>=2.8.0", "certifi>=2026.10.19", "filelock>=4.2.1", "setuptools>=84.1.0"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
